@@ -94,33 +94,48 @@
           <activeRecipes>
             <recipe>com.example.rewrite.UpgradeToJava17Boot3AndSecurity6</recipe>
           </activeRecipes>
+          <!-- Abilita logging dettagliato -->
+          <failOnInvalidActiveRecipes>false</failOnInvalidActiveRecipes>
+          <plainTextMasks>
+            <mask>**/application*.yml</mask>
+            <mask>**/application*.yaml</mask>
+            <mask>**/application*.properties</mask>
+          </plainTextMasks>
         </configuration>
         <dependencies>
+          <!-- Core OpenRewrite -->
           <dependency>
             <groupId>org.openrewrite</groupId>
             <artifactId>rewrite-java</artifactId>
             <version>8.66.1</version>
           </dependency>
 
-          <!-- recipes per Spring / Security -->
+          <!-- Spring recipes -->
           <dependency>
             <groupId>org.openrewrite.recipe</groupId>
             <artifactId>rewrite-spring</artifactId>
             <version>6.18.0</version>
           </dependency>
 
-          <!-- migrate Java (UpgradeToJava17) -->
+          <!-- Java migration -->
           <dependency>
             <groupId>org.openrewrite.recipe</groupId>
             <artifactId>rewrite-migrate-java</artifactId>
             <version>3.21.2</version>
           </dependency>
 
-          <!-- ricette testuali / static analysis (FindAndReplace) -->
+          <!-- Static analysis -->
           <dependency>
             <groupId>org.openrewrite.recipe</groupId>
             <artifactId>rewrite-static-analysis</artifactId>
             <version>2.21.0</version>
+          </dependency>
+
+          <!-- Testing framework (opzionale ma utile) -->
+          <dependency>
+            <groupId>org.openrewrite.recipe</groupId>
+            <artifactId>rewrite-testing-frameworks</artifactId>
+            <version>2.26.0</version>
           </dependency>
         </dependencies>
       </plugin>
