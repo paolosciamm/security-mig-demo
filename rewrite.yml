@@ -1,35 +1,59 @@
 type: specs.openrewrite.org/v1beta/recipe
 name: com.example.rewrite.UpgradeToJava17Boot3AndSecurity6
-displayName: Migrate to Spring Boot 3.5
+displayName: Migrate to Spring Boot 3.5 and Security 6
 description: |
-  Migrate applications to the latest Spring Boot 3.5 release. This recipe will modify an application's build files, make changes to deprecated/preferred APIs.
+  Migrate applications to the latest Spring Boot 3.5 and Spring Security 6. 
+  This recipe will modify build files and deprecated APIs.
 tags:
   - spring
   - boot
+  - security
 recipeList:
+  # 1. Upgrade Java to 17
   - org.openrewrite.java.migrate.UpgradeToJava17
-  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_4
-  - org.openrewrite.java.spring.boot3.SpringBootProperties_3_5
-  - org.openrewrite.java.spring.cloud2025.UpgradeSpringCloud_2025
-  - org.openrewrite.java.spring.security6.UpgradeSpringSecurity_6_5
+
+  # 2. Update imports per javax -> jakarta (PRIMA delle altre migrazioni)
+  - org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta
+
+  # 3. Prima converti antMatchers -> requestMatchers
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: org.springframework.security.config.annotation.web.builders.HttpSecurity antMatchers(..)
+      newMethodName: requestMatchers
+
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: org.springframework.security.config.annotation.web.AbstractRequestMatcherRegistry antMatchers(..)
+      newMethodName: requestMatchers
+
+  # 4. Rimuovi WebSecurityConfigurerAdapter deprecato (NOME CORRETTO)
+  - org.openrewrite.java.spring.security5.UseNewSecurityMatchers
+
+  # 5. Upgrade Spring Security - ordine specifico
+  - org.openrewrite.java.spring.security6.UpgradeSpringSecurity_6_0
+  - org.openrewrite.java.spring.security6.UpgradeSpringSecurity_6_1
+  - org.openrewrite.java.spring.security6.UpgradeSpringSecurity_6_2
+  - org.openrewrite.java.spring.security6.UpgradeSpringSecurity_6_3
+
+  # 6. Upgrade Spring Boot
+  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_0
+  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_1
+  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2
+  - org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3
+
+  # 7. Upgrade Maven parent e dependencies
+  - org.openrewrite.maven.UpgradeParentVersion:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-parent
+      newVersion: 3.5.0
+
   - org.openrewrite.java.dependencies.UpgradeDependencyVersion:
       groupId: org.springframework.boot
       artifactId: "*"
       newVersion: 3.5.x
       overrideManagedVersion: false
+
+  # 8. Upgrade JWT dependencies (se presenti)
   - org.openrewrite.java.dependencies.UpgradeDependencyVersion:
-      groupId: org.springframework.boot
-      artifactId: spring-boot-dependencies
-      newVersion: 3.5.x
-      overrideManagedVersion: true
-  - org.openrewrite.maven.UpgradePluginVersion:
-      groupId: org.springframework.boot
-      artifactId: spring-boot-maven-plugin
-      newVersion: 3.5.x
-  - org.openrewrite.maven.UpgradeParentVersion:
-      groupId: org.springframework.boot
-      artifactId: spring-boot-starter-parent
-      newVersion: 3.5.x
-  - org.openrewrite.gradle.plugins.UpgradePluginVersion:
-      pluginIdPattern: org.springframework.boot
-      newVersion: 3.5.x
+      groupId: io.jsonwebtoken
+      artifactId: jjwt-api
+      newVersion: 0.12.6
+      overrideManagedVersion: false
