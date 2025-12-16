@@ -1,5 +1,5 @@
 type: specs.openrewrite.org/v1beta/recipe
-name: com.example.rewrite.UpgradeToJava17Boot3AndSecurity6
+name: org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
 displayName: Migrate to Spring Boot 3.5
 description: |
   Migrate applications to the latest Spring Boot 3.5 release. This recipe will modify an application's build files, make changes to deprecated/preferred APIs.
