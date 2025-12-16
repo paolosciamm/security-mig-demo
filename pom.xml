@@ -130,13 +130,6 @@
             <artifactId>rewrite-static-analysis</artifactId>
             <version>2.21.0</version>
           </dependency>
-
-          <!-- Testing framework (opzionale ma utile) -->
-          <dependency>
-            <groupId>org.openrewrite.recipe</groupId>
-            <artifactId>rewrite-testing-frameworks</artifactId>
-            <version>2.26.0</version>
-          </dependency>
         </dependencies>
       </plugin>
     </plugins>
